@@ -120,20 +120,6 @@ func isReplayAttack(ciphertext []byte) bool {
 
 // --------------------------- DNS SESSION SEND ---------------------------
 
-func dnsLookup(domain string) (string, error) {
-	// {{if .Debug}}
-	log.Printf("[dns] lookup -> %s", domain)
-	// {{end}}
-	txts, err := net.LookupTXT(domain)
-	if err != nil || len(txts) == 0 {
-		// {{if .Debug}}
-		log.Printf("[!] failure -> %s", domain)
-		// {{end}}
-		return "", err
-	}
-	return strings.Join(txts, ""), nil
-}
-
 // Send raw bytes of an arbitrary length to the server
 func dnsSend(parentDomain string, msgType string, sessionID string, data []byte) (string, error) {
 
