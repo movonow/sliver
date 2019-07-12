@@ -62,6 +62,10 @@ func dnsLookup(domain string) (string, error) {
 
 	udpResolver := net.Resolver{
 		PreferGo: true,
+		Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
+			dialer := net.Dialer{}
+			return dialer.DialContext(ctx, "udp", fmt.Sprintf("%s:53", resolverIP))
+		},
 	}
 
 	// {{if .Debug}}
