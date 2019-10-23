@@ -246,6 +246,7 @@ func BindCommands(app *grumble.App, server *core.SliverServer) {
 		LongHelp: help.GetHelpFor(consts.ShellStr),
 		Flags: func(f *grumble.Flags) {
 			f.Bool("y", "no-pty", false, "disable use of pty on macos/linux")
+			f.String("s", "shell-path", "", "path to shell interpreter")
 		},
 		Run: func(ctx *grumble.Context) error {
 			fmt.Println()
@@ -257,6 +258,24 @@ func BindCommands(app *grumble.App, server *core.SliverServer) {
 	})
 
 	app.AddCommand(&grumble.Command{
+		Name:     consts.ExecuteStr,
+		Help:     "Execute a program on the remote system",
+		LongHelp: help.GetHelpFor(consts.ExecuteStr),
+		Flags: func(f *grumble.Flags) {
+			f.String("a", "args", "", "command arguments")
+			f.Bool("o", "output", false, "print the command output")
+		},
+		Run: func(ctx *grumble.Context) error {
+			fmt.Println()
+			execute(ctx, server.RPC)
+			fmt.Println()
+			return nil
+		},
+		AllowArgs: true,
+		HelpGroup: consts.SliverHelpGroup,
+	})
+
+	app.AddCommand(&grumble.Command{
 		Name:     consts.GenerateStr,
 		Help:     "Generate a sliver binary",
 		LongHelp: help.GetHelpFor(consts.GenerateStr),
@@ -264,7 +283,7 @@ func BindCommands(app *grumble.App, server *core.SliverServer) {
 			f.String("o", "os", "windows", "operating system")
 			f.String("a", "arch", "amd64", "cpu architecture")
 			f.Bool("d", "debug", false, "enable debug features")
-			f.Bool("s", "skip-symbols", false, "skip symbol obfuscation")
+			f.Bool("b", "skip-symbols", false, "skip symbol obfuscation")
 
 			f.String("c", "canary", "", "canary domain(s)")
 
@@ -794,6 +813,9 @@ func BindCommands(app *grumble.App, server *core.SliverServer) {
 			executeShellcode(ctx, server.RPC)
 			fmt.Println()
 			return nil
+		},
+		Flags: func(f *grumble.Flags) {
+			f.Bool("r", "rwx-pages", false, "Use RWX permissions for memory pages")
 		},
 		HelpGroup: consts.SliverHelpGroup,
 	})

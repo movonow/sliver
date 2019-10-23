@@ -55,6 +55,7 @@ func executeShellcode(ctx *grumble.Context, rpc RPCServer) {
 	data, _ := proto.Marshal(&clientpb.TaskReq{
 		Data:     shellcodeBin,
 		SliverID: ActiveSliver.Sliver.ID,
+		RwxPages: ctx.Flags.Bool("rwx-pages"),
 	})
 	resp := <-rpc(&sliverpb.Envelope{
 		Type: clientpb.MsgTask,
@@ -164,7 +165,7 @@ func executeAssembly(ctx *grumble.Context, rpc RPCServer) {
 
 	resp := <-rpc(&sliverpb.Envelope{
 		Data: data,
-		Type: sliverpb.MsgExecuteAssembly,
+		Type: clientpb.MsgExecuteAssemblyReq,
 	}, cmdTimeout)
 	ctrl <- true
 	<-ctrl
