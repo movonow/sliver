@@ -80,7 +80,7 @@ func TestSliverExecutableDarwin(t *testing.T) {
 
 func mtlsExe(t *testing.T, goos string, goarch string, debug bool) {
 	t.Logf("[mtls] EXE %s/%s - debug: %v", goos, goarch, debug)
-	config := &SliverConfig{
+	config := &ImplantConfig{
 		GOOS:   goos,
 		GOARCH: goarch,
 		C2: []SliverC2{
@@ -98,7 +98,7 @@ func mtlsExe(t *testing.T, goos string, goarch string, debug bool) {
 
 func dnsExe(t *testing.T, goos string, goarch string, debug bool) {
 	t.Logf("[dns] EXE %s/%s - debug: %v", goos, goarch, debug)
-	config := &SliverConfig{
+	config := &ImplantConfig{
 		GOOS:   goos,
 		GOARCH: goarch,
 		C2: []SliverC2{
@@ -116,7 +116,7 @@ func dnsExe(t *testing.T, goos string, goarch string, debug bool) {
 
 func httpExe(t *testing.T, goos string, goarch string, debug bool) {
 	t.Logf("[http] EXE %s/%s - debug: %v", goos, goarch, debug)
-	config := &SliverConfig{
+	config := &ImplantConfig{
 		GOOS:   goos,
 		GOARCH: goarch,
 		C2: []SliverC2{
@@ -138,7 +138,7 @@ func httpExe(t *testing.T, goos string, goarch string, debug bool) {
 
 func multiExe(t *testing.T, goos string, goarch string, debug bool) {
 	t.Logf("[multi] %s/%s - debug: %v", goos, goarch, debug)
-	config := &SliverConfig{
+	config := &ImplantConfig{
 		GOOS:   goos,
 		GOARCH: goarch,
 
@@ -162,7 +162,7 @@ func multiExe(t *testing.T, goos string, goarch string, debug bool) {
 
 func multiLibrary(t *testing.T, goos string, goarch string, debug bool) {
 	t.Logf("[multi] LIB %s/%s - debug: %v", goos, goarch, debug)
-	config := &SliverConfig{
+	config := &ImplantConfig{
 		GOOS:   goos,
 		GOARCH: goarch,
 
@@ -185,7 +185,7 @@ func multiLibrary(t *testing.T, goos string, goarch string, debug bool) {
 
 func symbolObfuscation(t *testing.T, goos string, goarch string) {
 	t.Logf("[symbol obfuscation] %s/%s ...", goos, goarch)
-	config := &SliverConfig{
+	config := &ImplantConfig{
 		GOOS:   goos,
 		GOARCH: goarch,
 

@@ -36,12 +36,12 @@ import (
 
 	"log"
 
+	consts "github.com/bishopfox/sliver/implant/constants"
+	"github.com/bishopfox/sliver/implant/handlers"
+	"github.com/bishopfox/sliver/implant/limits"
+	"github.com/bishopfox/sliver/implant/transports"
+	"github.com/bishopfox/sliver/implant/version"
 	pb "github.com/bishopfox/sliver/protobuf/sliver"
-	consts "github.com/bishopfox/sliver/sliver/constants"
-	"github.com/bishopfox/sliver/sliver/handlers"
-	"github.com/bishopfox/sliver/sliver/limits"
-	"github.com/bishopfox/sliver/sliver/transports"
-	"github.com/bishopfox/sliver/sliver/version"
 
 	"github.com/golang/protobuf/proto"
 )
@@ -86,7 +86,7 @@ func main() {
 
 func mainLoop(connection *transports.Connection) {
 
-	connection.Send <- getRegisterSliver() // Send registration information
+	connection.Send <- getRegisterInfo() // Send registration information
 
 	tunHandlers := handlers.GetTunnelHandlers()
 	sysHandlers := handlers.GetSystemHandlers()
@@ -118,7 +118,7 @@ func mainLoop(connection *transports.Connection) {
 	}
 }
 
-func getRegisterSliver() *pb.Envelope {
+func getRegisterInfo() *pb.Envelope {
 	hostname, err := os.Hostname()
 	if err != nil {
 		// {{if .Debug}}
