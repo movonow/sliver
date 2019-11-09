@@ -451,7 +451,7 @@ func renderSliverGoCode(config *SliverConfig, goConfig *gogo.GoConfig) (string, 
 
 		fSliver, _ := os.Create(sliverCodePath)
 		buf := bytes.NewBuffer([]byte{})
-		buildLog.Infof("[render] %s", sliverCodePath)
+		buildLog.Infof("[render] (%s) %s", boxName, sliverCodePath)
 
 		// Render code
 		sliverCodeTmpl, _ := template.New("sliver").Parse(sliverGoCode)
@@ -474,6 +474,10 @@ func renderSliverGoCode(config *SliverConfig, goConfig *gogo.GoConfig) (string, 
 			return "", err
 		}
 	}
+	err = util.ChmodR(sliverPkgDir, 0600, 0700)
+	if err != nil {
+		return "", err
+	}
 
 	if !config.Debug {
 		buildLog.Infof("Obfuscating source code ...")
@@ -489,6 +493,10 @@ func renderSliverGoCode(config *SliverConfig, goConfig *gogo.GoConfig) (string, 
 		buildLog.Infof("Obfuscated GOPATH = %s", obfgoPath)
 		buildLog.Infof("Obfuscated sliver package: %s", obfuscatedPkg)
 		sliverPkgDir = path.Join(obfgoPath, "src", obfuscatedPkg) // new "main"
+		err = util.ChmodR(sliverPkgDir, 0600, 0700)
+		if err != nil {
+			return "", err
+		}
 	}
 	if err != nil {
 		buildLog.Errorf("Failed to save sliver config %s", err)

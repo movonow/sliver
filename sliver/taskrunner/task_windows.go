@@ -530,13 +530,13 @@ func SpawnDll(procName string, data []byte, offset uint32, args string) (string,
 	cmd := exec.Command(procName)
 	cmd.Stdout = &stdoutBuff
 	cmd.Stderr = &stderrBuff
-	cmd.SysProcAttr = &syscall.SysProcAttr{
-		//{{if .Debug}}
-		HideWindow: false,
-		//{{else}}
-		HideWindow: true,
-		//{{end}}
-	}
+	cmd.SysProcAttr = &syscall.SysProcAttr{}
+	//{{if .Debug}}
+	(*cmd.SysProcAttr).HideWindow = false
+	//{{else}}
+	(*cmd.SysProcAttr).HideWindow = true
+	//{{end}}
+
 	err = cmd.Start()
 	if err != nil {
 		//{{if .Debug}}
