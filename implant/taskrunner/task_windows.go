@@ -38,7 +38,7 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/bishopfox/sliver/sliver/version"
+	"github.com/bishopfox/sliver/implant/version"
 )
 
 const (

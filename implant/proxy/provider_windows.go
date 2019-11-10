@@ -20,7 +20,7 @@ import (
 	// {{end}}
 
 	"net/url"
-	"github.com/bishopfox/sliver/sliver/winhttp"
+	"github.com/bishopfox/sliver/implant/winhttp"
 	"strings"
 )
 

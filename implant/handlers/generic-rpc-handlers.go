@@ -37,9 +37,9 @@ import (
 	"path/filepath"
 
 	pb "github.com/bishopfox/sliver/protobuf/sliver"
-	"github.com/bishopfox/sliver/sliver/procdump"
-	"github.com/bishopfox/sliver/sliver/ps"
-	"github.com/bishopfox/sliver/sliver/taskrunner"
+	"github.com/bishopfox/sliver/implant/procdump"
+	"github.com/bishopfox/sliver/implant/ps"
+	"github.com/bishopfox/sliver/implant/taskrunner"
 
 	"github.com/golang/protobuf/proto"
 )

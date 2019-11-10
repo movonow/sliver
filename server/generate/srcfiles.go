@@ -96,7 +96,10 @@ var (
 
 		"winhttp/winhttp.go",
 
-		"sliver.go",
+		"implant.go",
+
+		// module files
 		"go.mod",
+		"go.sum",
 	}
 )

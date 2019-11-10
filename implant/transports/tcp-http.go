@@ -53,7 +53,7 @@ import (
 	"time"
 
 	pb "github.com/bishopfox/sliver/protobuf/sliver"
-	"github.com/bishopfox/sliver/sliver/proxy"
+	"github.com/bishopfox/sliver/implant/proxy"
 
 	"github.com/golang/protobuf/proto"
 )

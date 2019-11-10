@@ -408,6 +408,18 @@ func renderSliverGoCode(config *ImplantConfig, goConfig *gogo.GoConfig) (string,
 		// different OS don't show up. So we just filter out anything
 		// we're not actually going to compile into the final binary
 		suffix := ".go"
+		if !strings.HasSuffix(boxName, suffix) {
+			buildLog.Infof("Copy non-src file: %s", boxName)
+			nonSrcFile, _ := sliverBox.FindString(boxName)
+			fPath := path.Join(sliverProjectDir, boxName)
+			fp, err := os.Create(fPath)
+			if err != nil {
+				return "", err
+			}
+			fp.Write([]byte(nonSrcFile))
+			fp.Close()
+			continue
+		}
 		if strings.Contains(boxName, "_") {
 			fileNameParts := strings.Split(boxName, "_")
 			suffix = "_" + fileNameParts[len(fileNameParts)-1]
@@ -426,7 +438,7 @@ func renderSliverGoCode(config *ImplantConfig, goConfig *gogo.GoConfig) (string,
 		sliverGoCode, _ := sliverBox.FindString(boxName)
 
 		// We need to correct for the "github.com/bishopfox/sliver/implant/foo" imports, since Go
-		// doesn't allow relative imports and "sliver" is a subdirectory of
+		// doesn't allow relative imports and "implant" is a subdirectory of
 		// the main "sliver" repo we need to fake this when coping the code
 		// to our per-compile "GOPATH"
 		var sliverCodePath string
@@ -449,7 +461,10 @@ func renderSliverGoCode(config *ImplantConfig, goConfig *gogo.GoConfig) (string,
 			sliverCodePath = path.Join(sliverProjectDir, fileName)
 		}
 
-		fSliver, _ := os.Create(sliverCodePath)
+		fSliver, err := os.Create(sliverCodePath)
+		if err != nil {
+			return "", err
+		}
 		buf := bytes.NewBuffer([]byte{})
 		buildLog.Infof("[render] (%s) %s", boxName, sliverCodePath)
 
@@ -464,7 +479,7 @@ func renderSliverGoCode(config *ImplantConfig, goConfig *gogo.GoConfig) (string,
 			SliverName:    config.Name,
 			ParentDomains: config.CanaryDomains,
 		}
-		canaryTemplate, err := canaryTemplate.Funcs(template.FuncMap{
+		canaryTemplate, err = canaryTemplate.Funcs(template.FuncMap{
 			"GenerateCanary": canaryGenerator.GenerateCanary,
 		}).Parse(buf.String())
 		canaryTemplate.Execute(fSliver, canaryGenerator)
@@ -474,6 +489,7 @@ func renderSliverGoCode(config *ImplantConfig, goConfig *gogo.GoConfig) (string,
 			return "", err
 		}
 	}
+
 	err = util.ChmodR(sliverProjectDir, 0600, 0700)
 	if err != nil {
 		return "", err

@@ -22,7 +22,7 @@ import (
 	"os"
 
 	pb "github.com/bishopfox/sliver/protobuf/sliver"
-	"github.com/bishopfox/sliver/sliver/transports"
+	"github.com/bishopfox/sliver/implant/transports"
 
 	// {{if .IsSharedLib}}
 	"runtime"

@@ -20,7 +20,7 @@ package handlers
 
 import (
 	pb "github.com/bishopfox/sliver/protobuf/sliver"
-	"github.com/bishopfox/sliver/sliver/transports"
+	"github.com/bishopfox/sliver/implant/transports"
 )
 
 type RPCResponse func([]byte, error)
