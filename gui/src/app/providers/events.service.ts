@@ -17,7 +17,9 @@ import { Injectable } from '@angular/core';
 import { IPCService } from './ipc.service';
 import { ProtobufService } from './protobuf.service';
 import { Subject } from 'rxjs';
-import * as pb from '@rpc/pb';
+import { SliverPB, ClientPB } from '@rpc/pb'; // Constants
+import * as clientpb from '@rpc/pb/client_pb'; // Protobuf
+import * as sliverpb from '@rpc/pb/sliver_pb'; // Protobuf
 
 
 export const Events = {
@@ -37,11 +39,11 @@ export const Events = {
 })
 export class EventsService extends ProtobufService {
 
-  events$ = new Subject<pb.Event>();
+  events$ = new Subject<clientpb.Event>();
 
-  players$ = new Subject<pb.Event>();
-  jobs$ = new Subject<pb.Event>();
-  sessions$ = new Subject<pb.Event>();
+  players$ = new Subject<clientpb.Event>();
+  jobs$ = new Subject<clientpb.Event>();
+  sessions$ = new Subject<clientpb.Event>();
 
   constructor(private _ipc: IPCService) {
     super();

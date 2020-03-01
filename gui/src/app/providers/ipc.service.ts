@@ -19,7 +19,9 @@ This service is the common carrier for all IPC messages.
 
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
-import * as pb from '@rpc/pb';
+import { SliverPB, ClientPB } from '@rpc/pb'; // Constants
+import * as clientpb from '@rpc/pb/client_pb'; // Protobuf
+import * as sliverpb from '@rpc/pb/sliver_pb'; // Protobuf
 import { ProtobufService } from './protobuf.service';
 
 interface IPCMessage {
@@ -35,9 +37,9 @@ interface IPCMessage {
 export class IPCService extends ProtobufService {
 
   private _ipcResponse$ = new Subject<IPCMessage>();
-  ipcEvent$ = new Subject<pb.Event>();
-  ipcTunnelData$ = new Subject<pb.TunnelData>();
-  ipcTunnelCtrl$ = new Subject<pb.TunnelClose>();
+  ipcEvent$ = new Subject<clientpb.Event>();
+  ipcTunnelData$ = new Subject<sliverpb.TunnelData>();
+  ipcTunnelCtrl$ = new Subject<sliverpb.TunnelClose>();
 
   constructor() {
     super();
@@ -47,18 +49,18 @@ export class IPCService extends ProtobufService {
         if (msg.type === 'response') {
           this._ipcResponse$.next(msg);
         } else if (msg.type === 'push') {
-          const envelope = pb.Envelope.deserializeBinary(this.decode(msg.data));
+          const envelope = sliverpb.Envelope.deserializeBinary(this.decode(msg.data));
           switch (envelope.getType()) {
-            case pb.ClientPB.MsgEvent:
-              const event = pb.Event.deserializeBinary(envelope.getData_asU8());
+            case ClientPB.MsgEvent:
+              const event = clientpb.Event.deserializeBinary(envelope.getData_asU8());
               this.ipcEvent$.next(event);
               break;
-            case pb.SliverPB.MsgTunnelData:
-              const data = pb.TunnelData.deserializeBinary(envelope.getData_asU8());
+            case SliverPB.MsgTunnelData:
+              const data = sliverpb.TunnelData.deserializeBinary(envelope.getData_asU8());
               this.ipcTunnelData$.next(data);
               break;
-            case pb.SliverPB.MsgTunnelClose:
-              const tunCtrl = pb.TunnelClose.deserializeBinary(envelope.getData_asU8());
+            case SliverPB.MsgTunnelClose:
+              const tunCtrl = sliverpb.TunnelClose.deserializeBinary(envelope.getData_asU8());
               this.ipcTunnelCtrl$.next(tunCtrl);
               break;
             default:
@@ -94,7 +96,7 @@ export class IPCService extends ProtobufService {
   }
 
   // Send envelope, don't wait for response
-  sendEnvelope(envelope: pb.Envelope) {
+  sendEnvelope(envelope: sliverpb.Envelope) {
     window.postMessage(JSON.stringify({
       id: 0,
       type: 'request',

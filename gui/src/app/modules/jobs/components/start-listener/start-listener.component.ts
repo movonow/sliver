@@ -17,7 +17,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import * as pb from '@rpc/pb';
+import * as clientpb from '@rpc/pb/client_pb'; // Protobuf
 import { FadeInOut } from '@app/shared/animations';
 import { JobsService } from '@app/providers/jobs.service';
 
@@ -68,7 +68,7 @@ export class StartListenerComponent implements OnInit {
   }
 
   async startListener() {
-    let job: pb.Job;
+    let job: clientpb.Job;
     let form: any;
     switch (this.protocol) {
       case 'mtls':

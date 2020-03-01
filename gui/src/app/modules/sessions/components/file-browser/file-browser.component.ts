@@ -21,7 +21,9 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dial
 import { MatMenuTrigger } from '@angular/material';
 
 import * as pako from 'pako';
-import * as pb from '@rpc/pb';
+
+import * as clientpb from '@rpc/pb/client_pb'; // Protobuf
+import * as sliverpb from '@rpc/pb/sliver_pb'; // Protobuf
 import { FadeInOut } from '@app/shared/animations';
 import { SliverService } from '@app/providers/sliver.service';
 import { ClientService } from '@app/providers/client.service';
@@ -47,8 +49,8 @@ function compare(a: number | string | boolean, b: number | string | boolean, isA
 })
 export class FileBrowserComponent implements OnInit {
 
-  ls: pb.Ls;
-  session: pb.Sliver;
+  ls: sliverpb.Ls;
+  session: clientpb.Sliver;
   dataSrc = new MatTableDataSource<TableFileData>();
   displayedColumns: string[] = [
     'isDir', 'name', 'size', 'options'
@@ -134,7 +136,7 @@ export class FileBrowserComponent implements OnInit {
     this.dataSrc.filter = filterValue.trim().toLowerCase();
   }
 
-  // Becauase MatTableDataSource is absolute piece of shit
+  // Because MatTableDataSource is absolute piece of shit
   sortData(event: Sort) {
     this.dataSrc.data = this.dataSrc.data.slice().sort((a, b) => {
       const isAsc = event.direction === 'asc';

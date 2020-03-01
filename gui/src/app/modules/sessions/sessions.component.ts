@@ -22,7 +22,8 @@ import { Subscription } from 'rxjs';
 import { FadeInOut } from '../../shared/animations';
 import { EventsService } from '../../providers/events.service';
 import { SliverService } from '../../providers/sliver.service';
-import * as pb from '../../../../rpc/pb';
+
+import * as clientpb from '@rpc/pb/client_pb'; // Protobuf
 
 
 interface TableSessionData {
@@ -72,7 +73,7 @@ export class SessionsComponent implements OnInit, OnDestroy {
     this.dataSrc = new MatTableDataSource(this.tableData(sessions));
   }
 
-  tableData(sessions: pb.Sessions): TableSessionData[] {
+  tableData(sessions: clientpb.Sessions): TableSessionData[] {
     const slivers = sessions.getSliversList();
     const table: TableSessionData[] = [];
     for (let index = 0; index < slivers.length; index++) {

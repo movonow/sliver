@@ -18,7 +18,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Sort } from '@angular/material/sort';
 import { SliverService } from '@app/providers/sliver.service';
 import { FadeInOut } from '@app/shared/animations';
-import * as pb from '@rpc/pb';
+
+import * as clientpb from '@rpc/pb/client_pb'; // Protobuf
 
 
 function compare(a: number | string | boolean, b: number | string | boolean, isAsc: boolean) {
@@ -57,7 +58,7 @@ export class CanariesComponent implements OnInit {
     this.dataSrc = new MatTableDataSource(this.tableData(canaries));
   }
 
-  tableData(canaries: pb.Canaries): TableCanaryData[] {
+  tableData(canaries: clientpb.Canaries): TableCanaryData[] {
     const table: TableCanaryData[] = [];
     for (const canary of canaries.getCanariesList()) {
       table.push({

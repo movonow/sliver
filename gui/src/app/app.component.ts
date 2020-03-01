@@ -19,7 +19,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 
 import { AppConfig } from '../environments/environment';
-import * as pb from '@rpc/pb';
+import { SliverPB, ClientPB } from '@rpc/pb'; // Constants
+import * as clientpb from '@rpc/pb/client_pb'; // Protobuf
+import * as sliverpb from '@rpc/pb/sliver_pb'; // Protobuf
 
 
 @Component({
@@ -33,7 +35,7 @@ export class AppComponent {
               private _eventsService: EventsService,
               private _snackBar: MatSnackBar) {
     console.log(AppConfig);
-    this._eventsService.events$.subscribe((event: pb.Event) => {
+    this._eventsService.events$.subscribe((event: clientpb.Event) => {
       const eventType = event.getEventtype();
       switch (eventType) {
 
@@ -61,19 +63,19 @@ export class AppComponent {
     });
   }
 
-  playerAlert(action: string, client: pb.Client) {
+  playerAlert(action: string, client: clientpb.Client) {
     this._snackBar.open(`${client.getOperator()} has ${action} the game!`, 'Dismiss', {
       duration: 5000,
     });
   }
 
-  jobStoppedAlert(job: pb.Job) {
+  jobStoppedAlert(job: clientpb.Job) {
     this._snackBar.open(`Job #${job.getId()} (${job.getProtocol()}/${job.getName()}) has stopped.`, 'Dismiss', {
       duration: 5000,
     });
   }
 
-  sessionOpenedAlert(session: pb.Sliver) {
+  sessionOpenedAlert(session: clientpb.Sliver) {
     const snackBarRef = this._snackBar.open(`Session #${session.getId()} opened`, 'Interact', {
       duration: 5000,
     });

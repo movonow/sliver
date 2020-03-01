@@ -18,7 +18,8 @@ import { ActivatedRoute } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
 import { Sort } from '@angular/material/sort';
 
-import * as pb from '@rpc/pb';
+import * as clientpb from '@rpc/pb/client_pb'; // Protobuf
+import * as sliverpb from '@rpc/pb/sliver_pb'; // Protobuf
 import { FadeInOut } from '@app/shared/animations';
 import { SliverService } from '@app/providers/sliver.service';
 
@@ -43,7 +44,7 @@ function compare(a: number | string, b: number | string, isAsc: boolean) {
 })
 export class PsComponent implements OnInit, OnDestroy {
 
-  session: pb.Sliver;
+  session: clientpb.Sliver;
   interval: NodeJS.Timer;
   dataSrc: MatTableDataSource<TableProcessData>;
   displayedColumns: string[] = [
@@ -79,7 +80,7 @@ export class PsComponent implements OnInit, OnDestroy {
     }
   }
 
-  tableData(ps: pb.Ps): TableProcessData[] {
+  tableData(ps: sliverpb.Ps): TableProcessData[] {
     const procs = ps.getProcessesList();
     const table: TableProcessData[] = [];
     for (let index = 0; index < procs.length; index++) {

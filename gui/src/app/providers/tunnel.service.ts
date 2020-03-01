@@ -18,7 +18,9 @@ import { Injectable } from '@angular/core';
 import { Subject, Observer } from 'rxjs';
 import { IPCService } from './ipc.service';
 import { ProtobufService } from './protobuf.service';
-import * as pb from '@rpc/pb';
+import { SliverPB, ClientPB } from '@rpc/pb'; // Constants
+import * as clientpb from '@rpc/pb/client_pb'; // Protobuf
+import * as sliverpb from '@rpc/pb/sliver_pb'; // Protobuf
 
 
 export interface Tunnel {
@@ -42,18 +44,18 @@ export class TunnelService extends ProtobufService {
 
 
     // Open Tunnel
-    const tunReqEnvl = new pb.Envelope();
-    tunReqEnvl.setType(pb.ClientPB.MsgTunnelCreate);
-    const tunReq = new pb.TunnelCreateReq();
+    const tunReqEnvl = new sliverpb.Envelope();
+    tunReqEnvl.setType(ClientPB.MsgTunnelCreate);
+    const tunReq = new clientpb.TunnelCreateReq();
     tunReq.setSliverid(sliverId);
     tunReqEnvl.setData(tunReq.serializeBinary());
     const tunResp = await this._ipc.request('rpc_request', this.encode(tunReqEnvl));
-    const tun: pb.TunnelCreate = pb.TunnelCreate.deserializeBinary(this.decode(tunResp));
+    const tun: clientpb.TunnelCreate = clientpb.TunnelCreate.deserializeBinary(this.decode(tunResp));
 
     // Request a shell
-    const shellReqEnvl = new pb.Envelope();
-    shellReqEnvl.setType(pb.SliverPB.MsgShellReq);
-    const shellReq = new pb.ShellReq();
+    const shellReqEnvl = new sliverpb.Envelope();
+    shellReqEnvl.setType(SliverPB.MsgShellReq);
+    const shellReq = new sliverpb.ShellReq();
     shellReq.setSliverid(tun.getSliverid());
     shellReq.setTunnelid(tun.getTunnelid());
     shellReq.setEnablepty(enablePty === undefined ? true : enablePty);
@@ -74,9 +76,9 @@ export class TunnelService extends ProtobufService {
     const sendObs: Observer<Uint8Array> = {
       next: (data: Uint8Array) => {
         console.log(`[tunnel] Send ${data.length} byte(s) on Tunnel ${tun.getTunnelid()}`);
-        const sendEnvl = new pb.Envelope();
-        sendEnvl.setType(pb.SliverPB.MsgTunnelData);
-        const sendData = new pb.TunnelData();
+        const sendEnvl = new sliverpb.Envelope();
+        sendEnvl.setType(SliverPB.MsgTunnelData);
+        const sendData = new sliverpb.TunnelData();
         sendData.setTunnelid(tun.getTunnelid());
         sendData.setSliverid(tun.getSliverid());
         sendData.setData(data);

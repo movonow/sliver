@@ -17,7 +17,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ValidationErrors } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
-import * as pb from '@rpc/pb';
+import * as clientpb from '@rpc/pb/client_pb'; // Protobuf
+
 import { FadeInOut } from '@app/shared/animations';
 import { SliverService } from '@app/providers/sliver.service';
 import { JobsService } from '@app/providers/jobs.service';
@@ -26,7 +27,7 @@ import { ClientService } from '@app/providers/client.service';
 
 
 interface Listener {
-  job: pb.Job;
+  job: clientpb.Job;
   checked: boolean;
 }
 
@@ -52,7 +53,7 @@ export class NewImplantComponent implements OnInit, OnDestroy {
   genC2Form: FormGroup;
   compileTimeOptionsForm: FormGroup;
 
-  jobs: pb.Job[];
+  jobs: clientpb.Job[];
   jobsSubscription: Subscription;
   listeners: Listener[];
 
@@ -190,7 +191,7 @@ export class NewImplantComponent implements OnInit, OnDestroy {
 
   async onGenerate() {
     this.isGenerating = true;
-    const config = new pb.SliverConfig();
+    const config = new clientpb.SliverConfig();
 
 
     const generate = await this._sliverService.generate(config);

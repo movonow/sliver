@@ -21,7 +21,9 @@ use protobuf.
 import { Injectable } from '@angular/core';
 import { IPCService } from './ipc.service';
 import { ProtobufService } from './protobuf.service';
-import * as pb from '@rpc/pb';
+import { SliverPB, ClientPB } from '@rpc/pb'; // Constants
+import * as clientpb from '@rpc/pb/client_pb'; // Protobuf
+import * as sliverpb from '@rpc/pb/sliver_pb'; // Protobuf
 
 
 @Injectable({
@@ -33,14 +35,14 @@ export class SliverService extends ProtobufService {
     super();
   }
 
-  async sessions(): Promise<pb.Sessions> {
-    const reqEnvelope = new pb.Envelope();
-    reqEnvelope.setType(pb.ClientPB.MsgSessions);
+  async sessions(): Promise<clientpb.Sessions> {
+    const reqEnvelope = new sliverpb.Envelope();
+    reqEnvelope.setType(ClientPB.MsgSessions);
     const resp = await this._ipc.request('rpc_request', this.encode(reqEnvelope));
-    return pb.Sessions.deserializeBinary(this.decode(resp));
+    return clientpb.Sessions.deserializeBinary(this.decode(resp));
   }
 
-  async sessionById(id: number): Promise<pb.Sliver> {
+  async sessionById(id: number): Promise<clientpb.Sliver> {
     const sessions = await this.sessions();
     const slivers = sessions.getSliversList();
     for (let index = 0; index < slivers.length; ++index) {
@@ -51,123 +53,123 @@ export class SliverService extends ProtobufService {
     return Promise.reject(`No session with id '${id}'`);
   }
 
-  async sliverBuilds(): Promise<pb.SliverBuilds> {
-    const reqEnvelope = new pb.Envelope();
-    reqEnvelope.setType(pb.ClientPB.MsgListSliverBuilds);
+  async sliverBuilds(): Promise<clientpb.SliverBuilds> {
+    const reqEnvelope = new sliverpb.Envelope();
+    reqEnvelope.setType(ClientPB.MsgListSliverBuilds);
     const resp = await this._ipc.request('rpc_request', this.encode(reqEnvelope));
-    return pb.SliverBuilds.deserializeBinary(this.decode(resp));
+    return clientpb.SliverBuilds.deserializeBinary(this.decode(resp));
   }
 
-  async canaries(): Promise<pb.Canaries> {
-    const reqEnvelope = new pb.Envelope();
-    reqEnvelope.setType(pb.ClientPB.MsgListCanaries);
+  async canaries(): Promise<clientpb.Canaries> {
+    const reqEnvelope = new sliverpb.Envelope();
+    reqEnvelope.setType(ClientPB.MsgListCanaries);
     const resp = await this._ipc.request('rpc_request', this.encode(reqEnvelope));
-    return pb.Canaries.deserializeBinary(this.decode(resp));
+    return clientpb.Canaries.deserializeBinary(this.decode(resp));
   }
 
-  async generate(config: pb.SliverConfig): Promise<pb.Generate> {
-    const reqEnvelope = new pb.Envelope();
-    const generateReq = new pb.GenerateReq();
+  async generate(config: clientpb.SliverConfig): Promise<clientpb.Generate> {
+    const reqEnvelope = new sliverpb.Envelope();
+    const generateReq = new clientpb.GenerateReq();
     generateReq.setConfig(config);
-    reqEnvelope.setType(pb.ClientPB.MsgGenerate);
+    reqEnvelope.setType(ClientPB.MsgGenerate);
     const resp = await this._ipc.request('rpc_request', this.encode(reqEnvelope));
-    return pb.Generate.deserializeBinary(this.decode(resp));
+    return clientpb.Generate.deserializeBinary(this.decode(resp));
   }
 
-  async regenerate(name: string): Promise<pb.Regenerate> {
-    const reqEnvelope = new pb.Envelope();
-    reqEnvelope.setType(pb.ClientPB.MsgRegenerate);
-    const regenReq = new pb.Regenerate();
+  async regenerate(name: string): Promise<clientpb.Regenerate> {
+    const reqEnvelope = new sliverpb.Envelope();
+    reqEnvelope.setType(ClientPB.MsgRegenerate);
+    const regenReq = new clientpb.Regenerate();
     regenReq.setSlivername(name);
     reqEnvelope.setData(regenReq.serializeBinary());
     const resp = await this._ipc.request('rpc_request', this.encode(reqEnvelope));
-    return pb.Regenerate.deserializeBinary(this.decode(resp));
+    return clientpb.Regenerate.deserializeBinary(this.decode(resp));
   }
 
-  async ps(sliverId: number): Promise<pb.Ps> {
-    const reqEnvelope = new pb.Envelope();
-    reqEnvelope.setType(pb.SliverPB.MsgPsReq);
-    const psReq = new pb.PsReq();
+  async ps(sliverId: number): Promise<sliverpb.Ps> {
+    const reqEnvelope = new sliverpb.Envelope();
+    reqEnvelope.setType(SliverPB.MsgPsReq);
+    const psReq = new sliverpb.PsReq();
     psReq.setSliverid(sliverId);
     reqEnvelope.setData(psReq.serializeBinary());
     const resp = await this._ipc.request('rpc_request', this.encode(reqEnvelope));
-    return pb.Ps.deserializeBinary(this.decode(resp));
+    return sliverpb.Ps.deserializeBinary(this.decode(resp));
   }
 
-  async ls(sliverId: number, targetDir: string): Promise<pb.Ls> {
-    const reqEnvelope = new pb.Envelope();
-    reqEnvelope.setType(pb.SliverPB.MsgLsReq);
-    const lsReq = new pb.LsReq();
+  async ls(sliverId: number, targetDir: string): Promise<sliverpb.Ls> {
+    const reqEnvelope = new sliverpb.Envelope();
+    reqEnvelope.setType(SliverPB.MsgLsReq);
+    const lsReq = new sliverpb.LsReq();
     lsReq.setSliverid(sliverId);
     lsReq.setPath(targetDir);
     reqEnvelope.setData(lsReq.serializeBinary());
     const resp = await this._ipc.request('rpc_request', this.encode(reqEnvelope));
-    return pb.Ls.deserializeBinary(this.decode(resp));
+    return sliverpb.Ls.deserializeBinary(this.decode(resp));
   }
 
-  async cd(sliverId: number, targetDir: string): Promise<pb.Pwd> {
-    const reqEnvelope = new pb.Envelope();
-    reqEnvelope.setType(pb.SliverPB.MsgCdReq);
-    const cdReq = new pb.CdReq();
+  async cd(sliverId: number, targetDir: string): Promise<sliverpb.Pwd> {
+    const reqEnvelope = new sliverpb.Envelope();
+    reqEnvelope.setType(SliverPB.MsgCdReq);
+    const cdReq = new sliverpb.CdReq();
     cdReq.setSliverid(sliverId);
     cdReq.setPath(targetDir);
     reqEnvelope.setData(cdReq.serializeBinary());
     const resp = await this._ipc.request('rpc_request', this.encode(reqEnvelope));
-    return pb.Pwd.deserializeBinary(this.decode(resp));
+    return sliverpb.Pwd.deserializeBinary(this.decode(resp));
   }
 
-  async rm(sliverId: number, target: string): Promise<pb.Rm> {
-    const reqEnvelope = new pb.Envelope();
-    reqEnvelope.setType(pb.SliverPB.MsgRmReq);
-    const rmReq = new pb.RmReq();
+  async rm(sliverId: number, target: string): Promise<sliverpb.Rm> {
+    const reqEnvelope = new sliverpb.Envelope();
+    reqEnvelope.setType(SliverPB.MsgRmReq);
+    const rmReq = new sliverpb.RmReq();
     rmReq.setSliverid(sliverId);
     rmReq.setPath(target);
     const resp = await this._ipc.request('rpc_request', this.encode(reqEnvelope));
-    return pb.Rm.deserializeBinary(this.decode(resp));
+    return sliverpb.Rm.deserializeBinary(this.decode(resp));
   }
 
-  async mkdir(sliverId: number, targetDir: string): Promise<pb.Mkdir> {
-    const reqEnvelope = new pb.Envelope();
-    reqEnvelope.setType(pb.SliverPB.MsgMkdirReq);
-    const mkdirReq = new pb.MkdirReq();
+  async mkdir(sliverId: number, targetDir: string): Promise<sliverpb.Mkdir> {
+    const reqEnvelope = new sliverpb.Envelope();
+    reqEnvelope.setType(SliverPB.MsgMkdirReq);
+    const mkdirReq = new sliverpb.MkdirReq();
     mkdirReq.setSliverid(sliverId);
     mkdirReq.setPath(targetDir);
     const resp = await this._ipc.request('rpc_request', this.encode(reqEnvelope));
-    return pb.Mkdir.deserializeBinary(this.decode(resp));
+    return sliverpb.Mkdir.deserializeBinary(this.decode(resp));
   }
 
-  async download(sliverId: number, targetFile: string): Promise<pb.Download> {
-    const reqEnvelope = new pb.Envelope();
-    reqEnvelope.setType(pb.SliverPB.MsgDownloadReq);
-    const downloadReq = new pb.DownloadReq();
+  async download(sliverId: number, targetFile: string): Promise<sliverpb.Download> {
+    const reqEnvelope = new sliverpb.Envelope();
+    reqEnvelope.setType(SliverPB.MsgDownloadReq);
+    const downloadReq = new sliverpb.DownloadReq();
     downloadReq.setSliverid(sliverId);
     downloadReq.setPath(targetFile);
     reqEnvelope.setData(downloadReq.serializeBinary());
     const resp = await this._ipc.request('rpc_request', this.encode(reqEnvelope));
-    return pb.Download.deserializeBinary(this.decode(resp));
+    return sliverpb.Download.deserializeBinary(this.decode(resp));
   }
 
-  async upload(sliverId: number, data: Uint8Array, encoder: string, dst: string): Promise<pb.Upload> {
-    const reqEnvelope = new pb.Envelope();
-    reqEnvelope.setType(pb.SliverPB.MsgUploadReq);
-    const uploadReq = new pb.UploadReq();
+  async upload(sliverId: number, data: Uint8Array, encoder: string, dst: string): Promise<sliverpb.Upload> {
+    const reqEnvelope = new sliverpb.Envelope();
+    reqEnvelope.setType(SliverPB.MsgUploadReq);
+    const uploadReq = new sliverpb.UploadReq();
     uploadReq.setSliverid(sliverId);
     uploadReq.setData(data);
     uploadReq.setEncoder(encoder);
     uploadReq.setPath(dst);
     reqEnvelope.setData(uploadReq.serializeBinary());
     const resp = await this._ipc.request('rpc_request', this.encode(reqEnvelope));
-    return pb.Upload.deserializeBinary(this.decode(resp));
+    return sliverpb.Upload.deserializeBinary(this.decode(resp));
   }
 
-  async ifconfig(sliverId: number): Promise<pb.Ifconfig> {
-    const reqEnvelope = new pb.Envelope();
-    reqEnvelope.setType(pb.SliverPB.MsgIfconfigReq);
-    const ifconfigReq = new pb.IfconfigReq();
+  async ifconfig(sliverId: number): Promise<sliverpb.Ifconfig> {
+    const reqEnvelope = new sliverpb.Envelope();
+    reqEnvelope.setType(SliverPB.MsgIfconfigReq);
+    const ifconfigReq = new sliverpb.IfconfigReq();
     ifconfigReq.setSliverid(sliverId);
     reqEnvelope.setData(ifconfigReq.serializeBinary());
     const resp = await this._ipc.request('rpc_request', this.encode(reqEnvelope));
-    return pb.Ifconfig.deserializeBinary(this.decode(resp));
+    return sliverpb.Ifconfig.deserializeBinary(this.decode(resp));
   }
 
 }

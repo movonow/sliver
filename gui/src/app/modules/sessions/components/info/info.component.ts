@@ -17,7 +17,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { SliverService } from '@app/providers/sliver.service';
-import * as pb from '@rpc/pb';
+import * as clientpb from '@rpc/pb/client_pb'; // Protobuf
+import * as sliverpb from '@rpc/pb/sliver_pb'; // Protobuf
 
 
 @Component({
@@ -27,8 +28,8 @@ import * as pb from '@rpc/pb';
 })
 export class InfoComponent implements OnInit {
 
-  session: pb.Sliver;
-  ifconfig: pb.Ifconfig;
+  session: clientpb.Sliver;
+  ifconfig: sliverpb.Ifconfig;
 
   constructor(private _route: ActivatedRoute,
               private _sliverService: SliverService) { }
@@ -49,7 +50,7 @@ export class InfoComponent implements OnInit {
     this.ifconfig = await this._sliverService.ifconfig(this.session.getId());
   }
 
-  get interfaces(): pb.NetInterface[] {
+  get interfaces(): sliverpb.NetInterface[] {
     if (!this.ifconfig) {
       return [];
     }

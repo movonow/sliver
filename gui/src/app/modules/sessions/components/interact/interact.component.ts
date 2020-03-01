@@ -18,7 +18,7 @@ import { ActivatedRoute } from '@angular/router';
 
 import { FadeInOut } from '../../../../shared/animations';
 import { SliverService } from '../../../../providers/sliver.service';
-import * as pb from '../../../../../../rpc/pb';
+import * as clientpb from '@rpc/pb/client_pb'; // Protobuf
 
 
 @Component({
@@ -29,7 +29,7 @@ import * as pb from '../../../../../../rpc/pb';
 })
 export class InteractComponent implements OnInit {
 
-  session: pb.Sliver;
+  session: clientpb.Sliver;
 
   constructor(private _route: ActivatedRoute,
               private _sliverService: SliverService) { }

@@ -16,7 +16,9 @@
 import { Injectable } from '@angular/core';
 import { IPCService } from './ipc.service';
 import { ProtobufService } from './protobuf.service';
-import * as pb from '@rpc/pb';
+import { SliverPB, ClientPB } from '@rpc/pb'; // Constants
+import * as clientpb from '@rpc/pb/client_pb'; // Protobuf
+import * as sliverpb from '@rpc/pb/sliver_pb'; // Protobuf
 
 
 @Injectable({
@@ -28,14 +30,14 @@ export class JobsService extends ProtobufService {
     super();
   }
 
-  async jobs(): Promise<pb.Jobs> {
-    const reqEnvelope = new pb.Envelope();
-    reqEnvelope.setType(pb.ClientPB.MsgJobs);
+  async jobs(): Promise<clientpb.Jobs> {
+    const reqEnvelope = new sliverpb.Envelope();
+    reqEnvelope.setType(ClientPB.MsgJobs);
     const resp = await this._ipc.request('rpc_request', this.encode(reqEnvelope));
-    return pb.Jobs.deserializeBinary(this.decode(resp));
+    return clientpb.Jobs.deserializeBinary(this.decode(resp));
   }
 
-  async jobById(jobId: number): Promise<pb.Job> {
+  async jobById(jobId: number): Promise<clientpb.Job> {
     const jobs = await this.jobs();
     const activeJobs = jobs.getActiveList();
     for (let index = 0; index < activeJobs.length; ++index) {
@@ -46,46 +48,46 @@ export class JobsService extends ProtobufService {
     return Promise.reject('Job not found');
   }
 
-  async startMTLSListener(lport: number): Promise<pb.Job> {
+  async startMTLSListener(lport: number): Promise<clientpb.Job> {
     console.log(`Starting mTLS listener on port ${lport}`);
     if (lport < 1 || 65535 <= lport) {
       return Promise.reject('Invalid port number');
     }
-    const reqEnvelope = new pb.Envelope();
-    reqEnvelope.setType(pb.ClientPB.MsgMtls);
-    const mtlsReq = new pb.MTLSReq();
+    const reqEnvelope = new sliverpb.Envelope();
+    reqEnvelope.setType(ClientPB.MsgMtls);
+    const mtlsReq = new clientpb.MTLSReq();
     mtlsReq.setLport(lport);
     reqEnvelope.setData(mtlsReq.serializeBinary());
     const resp = await this._ipc.request('rpc_request', this.encode(reqEnvelope));
-    const mtls = pb.MTLS.deserializeBinary(this.decode(resp));
+    const mtls = clientpb.MTLS.deserializeBinary(this.decode(resp));
     const job = await this.jobById(mtls.getJobid());
     return job;
   }
 
-  async startHTTPListener(domain: string, website: string, lport: number): Promise<pb.Job> {
+  async startHTTPListener(domain: string, website: string, lport: number): Promise<clientpb.Job> {
     if (lport < 1 || 65535 <= lport) {
       return Promise.reject('Invalid port number');
     }
-    const reqEnvelope = new pb.Envelope();
-    reqEnvelope.setType(pb.ClientPB.MsgHttp);
-    const httpReq = new pb.HTTPReq();
+    const reqEnvelope = new sliverpb.Envelope();
+    reqEnvelope.setType(ClientPB.MsgHttp);
+    const httpReq = new clientpb.HTTPReq();
     httpReq.setLport(lport);
     httpReq.setDomain(domain);
     httpReq.setWebsite(website);
     reqEnvelope.setData(httpReq.serializeBinary());
     const resp = await this._ipc.request('rpc_request', this.encode(reqEnvelope));
-    const http = pb.HTTP.deserializeBinary(this.decode(resp));
+    const http = clientpb.HTTP.deserializeBinary(this.decode(resp));
     const job = await this.jobById(http.getJobid());
     return job;
   }
 
-  async startHTTPSListener(domain: string, website: string, lport: number, acme: boolean): Promise<pb.Job> {
+  async startHTTPSListener(domain: string, website: string, lport: number, acme: boolean): Promise<clientpb.Job> {
     if (lport < 1 || 65535 <= lport) {
       return Promise.reject('Invalid port number');
     }
-    const reqEnvelope = new pb.Envelope();
-    reqEnvelope.setType(pb.ClientPB.MsgHttp);
-    const httpReq = new pb.HTTPReq();
+    const reqEnvelope = new sliverpb.Envelope();
+    reqEnvelope.setType(ClientPB.MsgHttp);
+    const httpReq = new clientpb.HTTPReq();
     httpReq.setLport(lport);
     httpReq.setDomain(domain);
     httpReq.setWebsite(website);
@@ -93,20 +95,20 @@ export class JobsService extends ProtobufService {
     httpReq.setAcme(acme ? true : false);
     reqEnvelope.setData(httpReq.serializeBinary());
     const resp = await this._ipc.request('rpc_request', this.encode(reqEnvelope));
-    const https = pb.HTTP.deserializeBinary(this.decode(resp));
+    const https = clientpb.HTTP.deserializeBinary(this.decode(resp));
     const job = await this.jobById(https.getJobid());
     return job;
   }
 
-  async startDNSListener(domains: string[], canaries: boolean): Promise<pb.Job> {
-    const reqEnvelope = new pb.Envelope();
-    reqEnvelope.setType(pb.ClientPB.MsgDns);
-    const dnsReq = new pb.DNSReq();
+  async startDNSListener(domains: string[], canaries: boolean): Promise<clientpb.Job> {
+    const reqEnvelope = new sliverpb.Envelope();
+    reqEnvelope.setType(ClientPB.MsgDns);
+    const dnsReq = new clientpb.DNSReq();
     dnsReq.setDomainsList(domains);
     dnsReq.setCanaries(canaries ? true : false);
     reqEnvelope.setData(dnsReq.serializeBinary());
     const resp = await this._ipc.request('rpc_request', this.encode(reqEnvelope));
-    const dns = pb.DNS.deserializeBinary(this.decode(resp));
+    const dns = clientpb.DNS.deserializeBinary(this.decode(resp));
     const job = await this.jobById(dns.getJobid());
     return job;
   }

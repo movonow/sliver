@@ -19,9 +19,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Sort } from '@angular/material/sort';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
+import * as clientpb from '@rpc/pb/client_pb'; // Protobuf
+
 import { FadeInOut } from '@app/shared/animations';
 import { SliverService } from '@app/providers/sliver.service';
-import * as pb from '@rpc/pb';
 import { ClientService } from '@app/providers/client.service';
 
 
@@ -82,7 +83,7 @@ export class HistoryComponent implements OnInit {
     this.dataSrc = new MatTableDataSource(this.tableData(sliverBuilds));
   }
 
-  tableData(builds: pb.SliverBuilds): TableSliverBuildData[] {
+  tableData(builds: clientpb.SliverBuilds): TableSliverBuildData[] {
 
     // For some reason Google thought it'd be cool to not give you any useful
     // datatypes, and their docs on how to use protobuf 'maps' in JavaScript
@@ -97,7 +98,7 @@ export class HistoryComponent implements OnInit {
     const table: TableSliverBuildData[] = [];
     for (const entry of entries) {
       const name: string = entry[0];
-      const config: pb.SliverConfig = entry[1];
+      const config: clientpb.SliverConfig = entry[1];
       table.push({
         name: name,
         os: config.getGoos(),
@@ -135,7 +136,7 @@ export class HistoryComponent implements OnInit {
     });
   }
 
-  c2sToURLs(sliverC2s: pb.SliverC2[]): string[] {
+  c2sToURLs(sliverC2s: clientpb.SliverC2[]): string[] {
     const c2URLs: string[] = [];
     for (let index = 0; index < sliverC2s.length; ++index) {
       c2URLs.push(sliverC2s[index].getUrl());

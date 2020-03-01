@@ -27,8 +27,7 @@ import * as uuid from 'uuid';
 
 import { jsonSchema } from './json-schema';
 import { RPCClient, RPCConfig } from '../rpc';
-import { Envelope } from '../rpc/pb';
-import { rejects } from 'assert';
+import { Envelope } from '../rpc/pb/sliver_pb';
 
 
 const CLIENT_DIR = path.join(homedir(), '.sliver-client');

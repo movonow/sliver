@@ -19,7 +19,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Sort } from '@angular/material/sort';
 import { Subscription } from 'rxjs';
 
-import * as pb from '@rpc/pb';
+import * as clientpb from '@rpc/pb/client_pb'; // Protobuf
 import { FadeInOut } from '@app/shared/animations';
 import { JobsService } from '@app/providers/jobs.service';
 import { EventsService } from '@app/providers/events.service';
@@ -70,7 +70,7 @@ export class JobsComponent implements OnInit, OnDestroy {
     this.dataSrc = new MatTableDataSource(this.tableData(jobs));
   }
 
-  tableData(jobs: pb.Jobs): TableJobData[] {
+  tableData(jobs: clientpb.Jobs): TableJobData[] {
     const activeJobs = jobs.getActiveList();
     const table: TableJobData[] = [];
     for (let index = 0; index < activeJobs.length; index++) {
