@@ -48,7 +48,7 @@ RUN wget -O protoc-${PROTOC_VER}-linux-x86_64.zip https://github.com/protocolbuf
     && cp -vv ./bin/protoc /usr/local/bin
 
 # go get utils
-RUN go get -u github.com/golang/protobuf/protoc-gen-go
+RUN go get github.com/golang/protobuf/protoc-gen-go
 RUN go get -u github.com/gobuffalo/packr/packr
 
 # install dep

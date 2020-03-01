@@ -74,10 +74,6 @@ func TestSliverExecutableDarwin(t *testing.T) {
 	multiExe(t, "darwin", "amd64", false)
 }
 
-// func TestSymbolObfuscation(t *testing.T) {
-// 	symbolObfuscation(t, "windows", "amd64")
-// }
-
 func mtlsExe(t *testing.T, goos string, goarch string, debug bool) {
 	t.Logf("[mtls] EXE %s/%s - debug: %v", goos, goarch, debug)
 	config := &SliverConfig{
@@ -165,7 +161,7 @@ func multiLibrary(t *testing.T, goos string, goarch string, debug bool) {
 	config := &SliverConfig{
 		GOOS:   goos,
 		GOARCH: goarch,
-	
+
 		C2: []SliverC2{
 			SliverC2{URL: "mtls://1.example.com"},
 			SliverC2{Priority: 2, URL: "mtls://2.example.com"},
@@ -176,12 +172,16 @@ func multiLibrary(t *testing.T, goos string, goarch string, debug bool) {
 		Debug:            debug,
 		ObfuscateSymbols: false,
 		Format:           clientpb.SliverConfig_SHARED_LIB,
-		IsSharedLib: true,
+		IsSharedLib:      true,
 	}
 	_, err := SliverSharedLibrary(config)
 	if err != nil {
 		t.Errorf(fmt.Sprintf("%v", err))
 	}
+}
+
+func TestSymbolObfuscation(t *testing.T) {
+	symbolObfuscation(t, "windows", "amd64")
 }
 
 func symbolObfuscation(t *testing.T, goos string, goarch string) {
