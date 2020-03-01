@@ -18,7 +18,7 @@ import { ActivatedRoute } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
 import { Sort } from '@angular/material/sort';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatMenuTrigger } from '@angular/material';
+import { MatMenuTrigger } from '@angular/material/menu';
 
 import * as pako from 'pako';
 
@@ -59,7 +59,7 @@ export class FileBrowserComponent implements OnInit {
   downloading = false;
   showHiddenFiles = true;
 
-  @ViewChild(MatMenuTrigger, { static: false }) contextMenu: MatMenuTrigger;
+  @ViewChild(MatMenuTrigger) contextMenu: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
 
   constructor(public dialog: MatDialog,

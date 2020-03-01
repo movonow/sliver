@@ -33,7 +33,7 @@ export class ShellComponent implements OnInit, AfterViewInit, OnDestroy {
 
   readonly SCROLLBACK = 100000;
 
-  @ViewChild('terminal', { static: false }) el: ElementRef;
+  @ViewChild('terminal') el: ElementRef;
   session: clientpb.Sliver;
   terminal: xterm.Terminal;
   recvSub: Subscription;
