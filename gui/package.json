@@ -33,7 +33,7 @@
     "version": "conventional-changelog -i CHANGELOG.md -s -r 0 && git add CHANGELOG.md"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "0.803.14",
+    "@angular-devkit/build-angular": "0.803.24",
     "@angular/cli": "8.3.14",
     "@angular/common": "8.2.12",
     "@angular/compiler": "8.2.12",
@@ -47,7 +47,7 @@
     "@types/jasmine": "3.4.4",
     "@types/jasminewd2": "2.0.8",
     "@types/mocha": "5.2.7",
-    "@types/node": "^12.11.7",
+    "@types/node": "^12.12.29",
     "chai": "4.2.0",
     "codelyzer": "5.2.0",
     "conventional-changelog-cli": "2.0.25",
@@ -71,7 +71,7 @@
     "typescript": "~3.4.0",
     "wait-on": "3.3.0",
     "webdriver-manager": "12.1.7",
-    "webpack-cli": "^3.3.9",
+    "webpack-cli": "^3.3.11",
     "zone.js": "0.10.2"
   },
   "engines": {
@@ -81,12 +81,12 @@
     "@angular/animations": "^8.2.12",
     "@angular/cdk": "^8.2.3",
     "@angular/material": "^8.2.3",
-    "@fortawesome/fontawesome-free": "^5.11.2",
+    "@fortawesome/fontawesome-free": "^5.12.1",
     "@materia-ui/ngx-monaco-editor": "^2.0.7",
-    "@types/uuid": "^3.4.5",
-    "ajv": "^6.10.2",
+    "@types/uuid": "^3.4.8",
+    "ajv": "^6.12.0",
     "base64-arraybuffer": "^0.2.0",
-    "google-protobuf": "^3.10.0",
+    "google-protobuf": "^3.11.4",
     "material-design-icons": "^3.0.1",
     "moment": "^2.24.0",
     "monaco-editor": "^0.18.1",
@@ -94,6 +94,6 @@
     "protobufjs": "^6.8.8",
     "requirejs": "^2.3.6",
     "rxjs": "^6.5.3",
-    "xterm": "^4.1.0"
+    "xterm": "^4.4.0"
   }
 }
