@@ -93,7 +93,7 @@ export class JobsComponent implements OnInit, OnDestroy {
     this._router.navigate(['sessions', row.id]);
   }
 
-  // Becauase MatTableDataSource is absolute piece of shit
+  // Because MatTableDataSource is absolute piece of shit
   sortData(event: Sort) {
     this.dataSrc.data = this.dataSrc.data.slice().sort((a, b) => {
       const isAsc = event.direction === 'asc';

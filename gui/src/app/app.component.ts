@@ -19,9 +19,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 
 import { AppConfig } from '../environments/environment';
-import { SliverPB, ClientPB } from '@rpc/pb'; // Constants
 import * as clientpb from '@rpc/pb/client_pb'; // Protobuf
-import * as sliverpb from '@rpc/pb/sliver_pb'; // Protobuf
 
 
 @Component({

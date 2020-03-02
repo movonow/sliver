@@ -12,9 +12,9 @@ Because I value my development time more than your RAM.
 
 Built with the following prerequisites:
 
-* Node v12.12.0
-* npm v6.12.0
-* protoc v3.10.0
+* Node v13.8.0
+* npm v6.13.7
+* protoc v3.11.4
 
 From this directory:
 
