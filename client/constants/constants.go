@@ -101,6 +101,7 @@ const (
 	DownloadStr = "download"
 	UploadStr   = "upload"
 	IfconfigStr = "ifconfig"
+	NetstatStr  = "netstat"
 
 	ProcdumpStr         = "procdump"
 	ImpersonateStr      = "impersonate"
@@ -115,6 +116,8 @@ const (
 	SpawnDllStr         = "spawndll"
 
 	WebsitesStr = "websites"
+
+	ScreenshotStr = "screenshot"
 
 	// Groups
 	GenericHelpGroup     = "Generic:"
